@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	)
 
 type Person struct{
@@ -19,27 +20,52 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 	
 	parameter := mux.Vars(r)
 	
-	found := false 
+//	found := false 
 
-	for _,item:=range People{
-		if item.ID == parameter["id"]{ 
-			json.NewEncoder(w).Encode(item)
-			found = true
-			break
-		}
+	content, err := ioutil.ReadFile(parameter["id"] )
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if found==false{
+	var person Person
+
+	err = json.Unmarshal(content,&person)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+	json.NewEncoder(w).Encode(person)	
+	// for _,item:=range People{
+	// 	if item.ID == parameter["id"]{ 
+	// 		json.NewEncoder(w).Encode(item)
+	// 		found = true
+	// 		break
+	// 	}
+	// }
+
+	// if found==false{
 				
-	}
+	// }
 }
 
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	log.Println("Creating person")
 	var person Person
     _ = json.NewDecoder(r.Body).Decode(&person)
+
+	a,_ := json.Marshal(person)
+
+	err := ioutil.WriteFile( person.ID , a,0)
+
 	
-	People = append(People,person)
+
+//	People = append(People,person)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	json.NewEncoder(w).Encode(person)
 	json.NewEncoder(w).Encode(People)
