@@ -6,72 +6,53 @@ import (
 	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/mypackage/TextFileRead"
+//	"github.com/mypackage/InMemoryfile"
 	)
 
-type Person struct{
+type Person struct {
 	FirstName string	`json: "firstname: omitempty"`
 	LastName string		`json: "lastname: omitempty"`
 	ID 		string 		`json: "id"`
 }
 
-var People []Person
-
 type IO interface {
 	ReadFile(map[string] string)	[]byte
-//	WriteFile(Person)
+	WriteFile(map[string]interface{} )
  
 }
 
-var db IO  = &TextFileRead.TextFileRead{}
-
+//var db IO  = &InMemoryfile.InMemoryfile{}
+var db IO = &TextFileRead.TextFileRead{}
 
 func GetPerson(w http.ResponseWriter, r *http.Request) {
 	
 	parameter := mux.Vars(r)
 
 	var person Person
+	content:= db.ReadFile(parameter)
 
-	err = json.Unmarshal(content,&person)
+	err := json.Unmarshal(content,&person)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return person
+ 
 
 	json.NewEncoder(w).Encode(person)	
-	// for _,item:=range People{
-	// 	if item.ID == parameter["id"]{ 
-	// 		json.NewEncoder(w).Encode(item)
-	// 		found = true
-	// 		break
-	// 	}
-	// }
-
-	// if found==false{
-				
-	// }
+ 
 }
 
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	log.Println("Creating person")
-	var person Person
-    _ = json.NewDecoder(r.Body).Decode(&person)
 
-	a,_ := json.Marshal(person)
+    var person map[string]interface{}
 
-	err := ioutil.WriteFile( person.ID , a,0)
-
-	
-
-//	People = append(People,person)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	json.NewEncoder(w).Encode(person)
-	json.NewEncoder(w).Encode(People)
+	_ = json.NewDecoder(r.Body).Decode(&person)
+  
+	db.WriteFile(person)	
+ 
+ 
+	json.NewEncoder(w).Encode(person) 
 
 }
 
