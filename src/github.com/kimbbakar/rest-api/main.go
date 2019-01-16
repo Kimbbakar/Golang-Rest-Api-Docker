@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/gorilla/mux"
-	"io/ioutil"
+	"github.com/mypackage/TextFileRead"
 	)
 
 type Person struct{
@@ -16,16 +16,18 @@ type Person struct{
 
 var People []Person
 
+type IO interface {
+	ReadFile(map[string] string)	[]byte
+//	WriteFile(Person)
+ 
+}
+
+var db IO  = &TextFileRead.TextFileRead{}
+
+
 func GetPerson(w http.ResponseWriter, r *http.Request) {
 	
 	parameter := mux.Vars(r)
-	
-//	found := false 
-
-	content, err := ioutil.ReadFile(parameter["id"] )
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var person Person
 
@@ -35,6 +37,7 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	return person
 
 	json.NewEncoder(w).Encode(person)	
 	// for _,item:=range People{
@@ -75,7 +78,7 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
-	router := mux.NewRouter()
+	router := mux.NewRouter() 
 	router.HandleFunc("/person/{id}",GetPerson ).Methods("GET")
 	router.HandleFunc("/person",CreatePerson ).Methods("POST")
 	log.Println("Listening...")
