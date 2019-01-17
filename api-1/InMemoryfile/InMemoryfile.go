@@ -57,3 +57,35 @@ func (T *InMemoryfile) GetPeople() []byte{
 
 	return []byte(content)
 }
+
+
+
+
+func (T *InMemoryfile) Update(id string, person map[string]string ) []byte {
+ 
+
+	var content = "Person not found"
+	
+  
+	if id != person["id"]{
+		return []byte ("url id and body id not same")
+	}
+
+	b,_:=json.Marshal(person) 
+	 
+ 	for i,val:= range T.People {
+		 		 
+
+		if val.ID == id{  
+			var tmp Person
+			json.Unmarshal(b,&tmp)
+			T.People[i] = tmp
+			content = string (b) 
+		}  
+ 
+ 
+ 
+	}
+ 
+	return [] byte (content)
+} 
