@@ -16,6 +16,10 @@ type InMemoryfile struct{
 	People []Person		
 }
 
+func (T *InMemoryfile) DatabaseName () string {
+	return "In memory Database"
+}
+
 func (T *InMemoryfile) ReadFile(parameter map[string] string) []byte {
 	
 	for _,val:= range T.People{
