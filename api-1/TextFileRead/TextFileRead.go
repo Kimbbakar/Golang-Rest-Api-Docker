@@ -155,4 +155,65 @@ func (T *TextFileRead) GetPeople() []byte{
 	return []byte(string(data) )
  
 
-}
+} 
+
+
+func (T *TextFileRead) Update(id string, person map[string]string ) []byte {
+
+	var _, err = os.Stat("person.txt")
+
+	var content = "Person not found"
+	
+	
+
+    // create file if not exists
+    if err!=nil { 
+		log.Println(err)
+		return []byte(content)
+		// _, err = os.Create("person.txt")
+		// if err != nil {
+		// 	log.Fatal(err.Error())
+		// } 
+    }
+  
+	if id != person["id"]{
+		return []byte ("url id and body id not same")
+	}
+
+	b,_:=json.Marshal(person) 
+	
+
+
+
+	data, err := ioutil.ReadFile("person.txt")	
+	
+	var allPerson string 
+	for  i := 0;i<len(data );{
+
+		for j :=i + 1 ;j < len(data);j++ {
+			if data[j]==byte('}'){
+				
+				var tmp Person 
+
+				json.Unmarshal([]byte(string (data[i:j+1]) )  ,&tmp ) 
+
+				if tmp.ID == id{ 
+					allPerson+=(string (b) )	
+					content = string (b) 
+				} else {
+					allPerson+=(string (data[i:j+1]) )					
+				} 
+				i = j + 1
+			}			
+		}
+ 
+ 
+ 
+	}
+
+	
+
+
+	_ = ioutil.WriteFile( "person.txt" ,[]byte(allPerson),0)	
+	return [] byte (content)
+} 
