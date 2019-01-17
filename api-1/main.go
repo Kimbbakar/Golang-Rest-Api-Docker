@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"github.com/kimbbakar/rest-api/api-1/mux"
-//	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
+	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
 	"github.com/kimbbakar/rest-api/api-1/InMemoryfile"
+	"flag"
 	)
 
 type Person struct {
@@ -16,6 +17,7 @@ type Person struct {
 }
 
 type IO interface {
+	DatabaseName()	string
 	ReadFile(map[string] string)	[]byte
 	WriteFile(map[string]interface{} )
 	GetPeople()                      []byte
@@ -23,7 +25,9 @@ type IO interface {
  
 }
 
-var db IO  = &InMemoryfile.InMemoryfile{}
+var db IO
+
+//var db IO  = &InMemoryfile.InMemoryfile{}
 //var db IO = &TextFileRead.TextFileRead{}
 
 func GetPerson(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +108,22 @@ func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
+
+	var database =flag.String("db", "file", "Default data bse is file")
+	flag.Parse()
+	log.Println(*database)
+	
+	if *database=="file"{
+		_ = &InMemoryfile.InMemoryfile{}
+		db = &TextFileRead.TextFileRead{}
+	}else{
+		db = &InMemoryfile.InMemoryfile{}		
+		_ = &TextFileRead.TextFileRead{}
+	} 
+
+	log.Println(db.DatabaseName() )
+
+
 	router := mux.NewRouter() 
 	router.HandleFunc("/person/{id}",GetPerson ).Methods("GET")
 	router.HandleFunc("/person/{id}",UpdatePerson ).Methods("POST")
