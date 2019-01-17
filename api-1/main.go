@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"github.com/kimbbakar/rest-api/api-1/mux"
-	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
-//	"github.com/rest-api/kimbbakar/api-1/InMemoryfile/"
+//	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
+	"github.com/kimbbakar/rest-api/api-1/InMemoryfile"
 	)
 
 type Person struct {
@@ -22,8 +22,8 @@ type IO interface {
  
 }
 
-//var db IO  = &InMemoryfile.InMemoryfile{}
-var db IO = &TextFileRead.TextFileRead{}
+var db IO  = &InMemoryfile.InMemoryfile{}
+//var db IO = &TextFileRead.TextFileRead{}
 
 func GetPerson(w http.ResponseWriter, r *http.Request) {
 	

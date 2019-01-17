@@ -42,3 +42,18 @@ func (T *InMemoryfile) WriteFile(content map[string] interface{} ) {
 		log.Fatal(err)
 	}
 }
+
+func (T *InMemoryfile) GetPeople() []byte{
+ 
+	var content = ""
+	for _,val:= range T.People{
+		b,_:=json.Marshal(val)
+		content+=string(b)
+	}     
+		
+	if len(content)==0{
+		content = "Person not found"
+	}
+
+	return []byte(content)
+}
