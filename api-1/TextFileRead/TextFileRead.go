@@ -19,6 +19,14 @@ type TextFileRead struct{
 	
 }
 
+func (T *TextFileRead)  Init()   {
+ 
+}
+
+func (T *TextFileRead)  Close()   {
+ 
+}
+
 func (T *TextFileRead) DatabaseName () string {
 	return "Text File Database"
 }
