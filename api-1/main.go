@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"github.com/kimbbakar/rest-api/api-1/mux"
+	"github.com/gorilla/mux"
 	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
 	"github.com/kimbbakar/rest-api/api-1/InMemoryfile"
 	"flag"
