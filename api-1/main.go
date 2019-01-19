@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"github.com/kimbbakar/rest-api/api-1/mux"
-//	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
+	"github.com/gorilla/mux"
+	"github.com/kimbbakar/rest-api/api-1/TextFileRead"
 	"github.com/kimbbakar/rest-api/api-1/InMemoryfile"
+	"github.com/kimbbakar/rest-api/api-1/Mongodb"
+	"flag"
 	)
 
 type Person struct {
@@ -16,6 +18,9 @@ type Person struct {
 }
 
 type IO interface {
+	Init()     
+	Close()
+	DatabaseName()	string
 	ReadFile(map[string] string)	[]byte
 	WriteFile(map[string]interface{} )
 	GetPeople()                      []byte
@@ -23,7 +28,9 @@ type IO interface {
  
 }
 
-var db IO  = &InMemoryfile.InMemoryfile{}
+var db IO
+
+//var db IO  = &InMemoryfile.InMemoryfile{}
 //var db IO = &TextFileRead.TextFileRead{}
 
 func GetPerson(w http.ResponseWriter, r *http.Request) {
@@ -102,13 +109,36 @@ func UpdatePerson(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func DatabaseProcess(){
+	log.Println(db.DatabaseName() )
 
-func main() {
+
 	router := mux.NewRouter() 
 	router.HandleFunc("/person/{id}",GetPerson ).Methods("GET")
 	router.HandleFunc("/person/{id}",UpdatePerson ).Methods("POST")
 	router.HandleFunc("/person",CreatePerson ).Methods("POST")
 	router.HandleFunc("/person",GetPeople ).Methods("GET")
 	log.Println("Listening...")
-	http.ListenAndServe(":8080", router)
+	http.ListenAndServe(":8080", router)	
+}
+
+
+func main() {
+
+	var database =flag.String("db", "file", "Default data bse is file")
+	flag.Parse()
+	log.Println(*database)
+	
+	if *database=="file"{
+		db = &TextFileRead.TextFileRead{}
+	}else if *database=="mongo"  { 
+		db = &Mongodb.Mongodb{} 
+		 
+	}else{
+		db = &InMemoryfile.InMemoryfile{}		
+	}
+	
+	db.Init()	 
+	DatabaseProcess() 
+	db.Close() 
 }

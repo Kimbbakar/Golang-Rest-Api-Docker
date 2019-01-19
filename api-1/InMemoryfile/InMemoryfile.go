@@ -11,9 +11,21 @@ type Person struct {
 	ID 		string 		`json: "id"`
 }
 
-
+ 
 type InMemoryfile struct{
 	People []Person		
+}
+
+func (T *InMemoryfile)  Init()   {
+ 
+}
+
+func (T *InMemoryfile)  Close()   {
+ 
+}
+
+func (T *InMemoryfile) DatabaseName () string {
+	return "In memory Database"
 }
 
 func (T *InMemoryfile) ReadFile(parameter map[string] string) []byte {
