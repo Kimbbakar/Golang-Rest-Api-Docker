@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	url = "localhost"
+	url = "mongo:27017"
 )
 
 type Person struct {
@@ -23,7 +23,15 @@ type Mongodb struct {
 }
 
 func (T *Mongodb)  Init()   {
-	T.session, _ = mgo.Dial(url)
+	var err interface{}
+	T.session, err = mgo.Dial(url)
+	if err != nil {
+		log.Fatalln(err)
+		log.Fatalln("mongo err") 
+	}	
+
+	//T.session.DB("People").C("info").Insert(bson.M{"id": "0","firstname":"tmp","lastname":"tmp" })
+	T.session.SetMode(mgo.Monotonic, true)
 
 	T.db = T.session.DB("People")
 	
@@ -47,7 +55,12 @@ func (T *Mongodb) DatabaseName () string {
 func (T *Mongodb) ReadFile(parameter map[string] string) []byte {
 	c := T.db.C("info")
 	var result Person
-	count, _ := c.Find(bson.M{"id": parameter["id"] }).Count()
+	count, err := c.Find(bson.M{"id": parameter["id"] }).Count()
+
+	if err!=nil{
+		log.Fatal(err)
+	}
+
 	if count==0{
 		return []byte ("Person not found")
 	}
@@ -60,13 +73,13 @@ func (T *Mongodb) ReadFile(parameter map[string] string) []byte {
 } 
 
 func (T *Mongodb) WriteFile(content map[string] interface{} ) {
+ 
 	c := T.db.C("info")
 	var result Person
 
 
 	b,_:=json.Marshal(content)
-	_=json.Unmarshal(b,&result)
-	
+	_=json.Unmarshal(b,&result) 
 	c.Insert(result)
 }
 
