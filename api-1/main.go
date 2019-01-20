@@ -125,13 +125,13 @@ func DatabaseProcess(){
 
 func main() {
 
-	var database =flag.String("db", "file", "Default data bse is file")
+	var database =flag.String("db", "mongo", "Default data bse is file")
 	flag.Parse()
 	log.Println(*database)
 	
 	if *database=="file"{
 		db = &TextFileRead.TextFileRead{}
-	}else if *database=="mongo"  { 
+	}else if *database=="mongo"  {
 		db = &Mongodb.Mongodb{} 
 		 
 	}else{
@@ -140,5 +140,5 @@ func main() {
 	
 	db.Init()	 
 	DatabaseProcess() 
-	db.Close() 
+	defer db.Close() 
 }
